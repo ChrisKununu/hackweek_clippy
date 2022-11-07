@@ -49,7 +49,7 @@ text_mapping = {
 def load_reviews_gbq(path: os.PathLike = query_path) -> pd.DataFrame:
     with open(path, mode='r') as query_file:
         reviews_query = query_file.read()
-    df = pd.read_gbq(reviews_query, project_id='kununu-dwh')
+    df = pd.read_gbq(reviews_query, project_id='kununu-dwh', use_bqstorage_api=True)
 
     return df
 
