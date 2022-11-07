@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pandas = "*"
+tqdm = "*"
+numpy = "*"
+streamlit = "*"
+opensearch-py = "*"
+farm-haystack = {extras = ["crawler"], version = "*"}
+
+[dev-packages]
+
+[requires]
+python_version = "3.9.11"
