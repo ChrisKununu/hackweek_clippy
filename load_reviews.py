@@ -70,14 +70,15 @@ def process_reviews(
     for column in filter(lambda x: x.startswith('text_s') | (x == 'improvement_text'), data.columns):
         print(f'processing column: {column}')
 
+        # first copy over the unprocessed text
+        data[f'{column}_original'] = data[column]
+
         # lower, remove special chars
         data[column] = data[column].str.lower()
         data[column] = data[column].str.replace(pat=r'[0-9]', repl='', regex=True)
         data[column] = data[column].str.replace(pat=r'ß', repl='ss', regex=True)
         # todo: before removing non-whitespace, split multi-paragraph answers into PARTS (for topic detection
         data[column] = data[column].str.replace(pat=r'\W+', repl=' ', regex=True)
-
-        data[f'{column}_original'] = data[column]
 
         sw = stopwords.words('german')
         sw.remove('nicht')
@@ -94,7 +95,7 @@ def process_reviews(
         # trim, split, rejoin to remove redundant spaces
         data[column] = data[column].str.strip().str.split().str.join(' ')
 
-        data[f'{column}_len'] = data[column].str.split(' ').str.len()
+        data[f'{column}_len'] = data[f'{column}_original'].str.split(' ').str.len()
         data[f'{column}_language'] = data[column].apply(lambda x: model.predict(x) if x is not None else None)
         data[f'{column}_language_confidence'] = data[f'{column}_language'].apply(lambda x: x[1][0] if x is not None else None)
 
