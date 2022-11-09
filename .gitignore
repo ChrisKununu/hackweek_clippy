@@ -129,5 +129,7 @@ dmypy.json
 .pyre/
 data/
 models/
+dev/
+notebooks/
 
 config/credentials.yaml
