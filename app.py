@@ -3,7 +3,7 @@ import json
 from haystack.document_stores import OpenSearchDocumentStore
 from haystack.pipelines import ExtractiveQAPipeline
 from haystack.schema import Document
-from haystack.nodes import BM25Retriever, FARMReader
+from haystack.nodes import BM25Retriever, FARMReader, DensePassageRetriever
 import pandas as pd
 from tqdm import tqdm
 import yaml
@@ -59,7 +59,15 @@ def data_setup(
                                              index=ds_config['index_name'])
 
     # Loads reader and retriever
-    retriever = BM25Retriever(document_store=document_store)
+    #retriever = BM25Retriever(document_store=document_store)
+    retriever = DensePassageRetriever(
+        document_store=document_store,
+        query_embedding_model=ds_config['query_embedding_model'],
+        passage_embedding_model=ds_config['passage_embedding_model'],
+        use_gpu=True,
+        embed_title=True
+        )
+    document_store.update_embeddings(retriever=retriever)
     reader = FARMReader(model_name_or_path=ds_config['model_name'], use_gpu=True)
 
     pipe = ExtractiveQAPipeline(reader, retriever)
