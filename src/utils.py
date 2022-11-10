@@ -5,10 +5,10 @@ from tqdm import tqdm
 import yaml
 
 
-def generate_documents(config, min_words):
-    df = pd.read_parquet(config['output_file_path'], engine='pyarrow')
+def generate_documents(data: pd.DataFrame,
+                       min_words: int) -> list:
     documents = []
-    for idx, item in tqdm(df.T.items()):
+    for idx, item in tqdm(data.T.items()):
         meta = item.drop(labels=['content']).to_dict()
         for text in item.content.split('\n\n'):
             if len(text.split()) > min_words and '?' not in text:
@@ -17,7 +17,9 @@ def generate_documents(config, min_words):
     return documents
 
 
-def create_index():
+def create_index(data: pd.DataFrame,
+                 min_words: int) -> None:
+
     with open('config/credentials.yaml') as f:
         credentials = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -33,7 +35,7 @@ def create_index():
 
     # preprocess input data for indexing
     print("Generating Documents from the files...")
-    documents = generate_documents(config, 12)
+    documents = generate_documents(data=data, min_words=min_words)
 
     # write the dicts containing documents to Opensearch
     print("Writing Documents to the Document store...")
