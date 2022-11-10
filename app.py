@@ -26,14 +26,6 @@ def set_state_if_absent(key, value):
 
 
 def main():
-    image = Image.open('img/clippy_image.png')
-
-    st.set_page_config(page_title="Clippy Demo", page_icon=image)
-
-    # Persistent state
-    set_state_if_absent("question", DEFAULT_QUESTION_AT_STARTUP)
-    set_state_if_absent("answer", DEFAULT_ANSWER_AT_STARTUP)
-
     # Small callback to reset the interface in case the text of the question changes
     def reset_results(*args):
         st.session_state.answer = None
@@ -41,20 +33,27 @@ def main():
         st.session_state.raw_json = None
 
     # load settings and mappings for index
-
     with open('config/credentials.yaml') as f:
         credentials = yaml.load(f, Loader=yaml.FullLoader)
 
     with open('config/config.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
+    image = Image.open('img/clippy_image.png')
+
+    # Persistent state
+    set_state_if_absent("question", DEFAULT_QUESTION_AT_STARTUP)
+    set_state_if_absent("answer", DEFAULT_ANSWER_AT_STARTUP)
+
+    st.set_page_config(page_title="Clippy Demo", page_icon=image)
+
+    # init a DocumentStore
     document_store = OpenSearchDocumentStore(host=credentials['host'],
                                              username=credentials['user'],
                                              password=credentials['password'],
                                              index=config['index_name'])
 
     # Sidebar
-
     st.sidebar.image(image, caption=None)
     st.sidebar.header("Options")
     top_k_reader = st.sidebar.slider(
@@ -77,8 +76,11 @@ def main():
     with st.spinner(
             "🧠 &nbsp;&nbsp; Setting up the system... \n "
             ):
+
+        # Loads reader and retriever
         retriever = BM25Retriever(document_store=document_store)
         reader = FARMReader(model_name_or_path=config['model_name'], use_gpu=True)
+        pipe = ExtractiveQAPipeline(reader, retriever)
         # Title
         st.write("# Clippy Demo - Explore the blog")
         st.markdown(
@@ -100,7 +102,7 @@ def main():
             label_visibility="hidden",
             )
 
-        pipe = ExtractiveQAPipeline(reader, retriever)
+
 
     if search_term:
         with st.spinner(
