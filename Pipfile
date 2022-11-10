@@ -10,8 +10,16 @@ numpy = "*"
 streamlit = "*"
 opensearch-py = "*"
 farm-haystack = {extras = ["crawler"], version = "*"}
+fasttext = "*"
+nltk = "*"
+pandas-gbq = "*"
+st-annotated-text = "*"
+markdown = "*"
 
 [dev-packages]
+trafilatura = "*"
+ipykernel = "*"
+jupyter = "*"
 
 [requires]
 python_version = "3.9.11"
