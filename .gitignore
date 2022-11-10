@@ -127,5 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-data/
 models/
+dev/
+notebooks/
+
+config/credentials.yaml
+haystack_app/
