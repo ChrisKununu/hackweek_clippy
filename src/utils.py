@@ -11,7 +11,7 @@ def generate_documents(config, min_words):
     for idx, item in tqdm(df.T.items()):
         meta = item.drop(labels=['content']).to_dict()
         for text in item.content.split('\n\n'):
-            if len(text.split()) > min_words:
+            if len(text.split()) > min_words and '?' not in text:
                 document = Document(content=text, meta=meta, id_hash_keys=['content'])
                 documents.append(document)
     return documents
