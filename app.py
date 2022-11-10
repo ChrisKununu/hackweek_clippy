@@ -11,6 +11,9 @@ from annotated_text import annotation
 from markdown import markdown
 from PIL import Image
 
+
+image = Image.open('img/clippy_image.png')
+st.set_page_config(page_title="Clippy Demo", page_icon=image)
 # Adjust to a question that you would like users to see in the search bar when they load the UI:
 DEFAULT_QUESTION_AT_STARTUP = "Was sind die häufigsten Fehler in einer Bewerbung?"
 DEFAULT_ANSWER_AT_STARTUP = "None"
@@ -25,13 +28,15 @@ def set_state_if_absent(key, value):
         st.session_state[key] = value
 
 
-def main():
-    # Small callback to reset the interface in case the text of the question changes
-    def reset_results(*args):
-        st.session_state.answer = None
-        st.session_state.results = None
-        st.session_state.raw_json = None
+# Small callback to reset the interface in case the text of the question changes
+def reset_results(*args):
+    st.session_state.answer = None
+    st.session_state.results = None
+    st.session_state.raw_json = None
 
+
+@st.cache(ttl=600)
+def setup() -> tuple:
     # load settings and mappings for index
     with open('config/credentials.yaml') as f:
         credentials = yaml.load(f, Loader=yaml.FullLoader)
@@ -39,19 +44,39 @@ def main():
     with open('config/config.yaml') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    image = Image.open('img/clippy_image.png')
+    return credentials, config
+
+
+@st.cache(ttl=600, allow_output_mutation=True)
+def data_setup(
+    ds_credentials,
+    ds_config):
+
+    # init a DocumentStore
+    document_store = OpenSearchDocumentStore(host=ds_credentials['host'],
+                                             username=ds_credentials['user'],
+                                             password=ds_credentials['password'],
+                                             index=ds_config['index_name'])
+
+    # Loads reader and retriever
+    retriever = BM25Retriever(document_store=document_store)
+    reader = FARMReader(model_name_or_path=ds_config['model_name'], use_gpu=True)
+
+    pipe = ExtractiveQAPipeline(reader, retriever)
+
+    return pipe
+
+
+
+def main():
+
+    credentials, config = setup()
+    pipe = data_setup(credentials, config)
 
     # Persistent state
     set_state_if_absent("question", DEFAULT_QUESTION_AT_STARTUP)
     set_state_if_absent("answer", DEFAULT_ANSWER_AT_STARTUP)
 
-    st.set_page_config(page_title="Clippy Demo", page_icon=image)
-
-    # init a DocumentStore
-    document_store = OpenSearchDocumentStore(host=credentials['host'],
-                                             username=credentials['user'],
-                                             password=credentials['password'],
-                                             index=config['index_name'])
 
     # Sidebar
     st.sidebar.image(image, caption=None)
@@ -77,10 +102,7 @@ def main():
             "🧠 &nbsp;&nbsp; Setting up the system... \n "
             ):
 
-        # Loads reader and retriever
-        retriever = BM25Retriever(document_store=document_store)
-        reader = FARMReader(model_name_or_path=config['model_name'], use_gpu=True)
-        pipe = ExtractiveQAPipeline(reader, retriever)
+
         # Title
         st.write("# Clippy Demo - Explore the blog")
         st.markdown(
@@ -99,7 +121,7 @@ def main():
             max_chars=100,
             on_change=reset_results,
             label='Enter your Question:',
-            label_visibility="hidden",
+            label_visibility="hidden"
             )
 
 
@@ -142,6 +164,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
 
