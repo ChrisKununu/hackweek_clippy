@@ -163,11 +163,11 @@ def main():
                         unsafe_allow_html=True,
                         )
                     st.markdown(f"**Relevance:** {score} -  **Source:** {source}")
-                else:
-                    st.info(
-                        "🤔 &nbsp;&nbsp; Clippy is unsure whether any of the documents contain an answer to your question. Try to reformulate it!"
-                        )
-                    st.write("**Relevance:** ", score)
+                #else:
+                #    st.info(
+                #        "🤔 &nbsp;&nbsp; Clippy is unsure whether any of the documents contain an answer to your question. Try to reformulate it!"
+                #        )
+                #    st.write("**Relevance:** ", score)
 
 
 if __name__ == '__main__':
