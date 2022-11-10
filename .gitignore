@@ -133,3 +133,4 @@ dev/
 notebooks/
 
 config/credentials.yaml
+haystack_app/
