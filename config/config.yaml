@@ -1,5 +1,5 @@
 data_path: "data/"
 index_name: "blog"
-input_file_path: "data/blog_data/kununublog.WordPress.2022-11-08.xml"
-output_file_path: "data/blog_data/kununublog.parquet"
-model_name: "deepset/roberta-base-squad2"
+input_file_path: "data/kununublog.WordPress.2022-11-08.xml"
+output_file_path: "data/kununublog.parquet"
+model_name: "deepset/gelectra-base-germanquad-distilled"
