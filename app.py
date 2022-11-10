@@ -97,6 +97,14 @@ def main():
         step=1,
         on_change=reset_results,
         )
+    min_score = st.sidebar.slider(
+        "Min. Score for valid results",
+        min_value=0,
+        max_value=100,
+        value=50,
+        step=1,
+        on_change=reset_results,
+        )
 
     with st.spinner(
             "🧠 &nbsp;&nbsp; Setting up the system... \n "
@@ -148,7 +156,7 @@ def main():
                 url, title = meta['link'], meta['title']
                 source = f"[{title}]({url})"
 
-                if score > 0.7:
+                if score > float(min_score):
                     # Hack due to this bug: https://github.com/streamlit/streamlit/issues/3190
                     st.write(
                         markdown(context[:start_idx] + str(annotation(answer, "ANSWER", "#8ef")) + context[end_idx:]),
