@@ -137,8 +137,9 @@ def process_reviews(
     return data
 
 
-def load():
+def load_opensearch(index_name: str = None):
     pass
+
 
 
 if __name__ == '__main__':

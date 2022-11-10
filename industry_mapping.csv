@@ -1,0 +1,43 @@
+id,name,permalink,xing_id,xing_name,translation_key
+2,Baugewerbe / Architektur,ba,INDUSTRY_10000,Architektur und Bauwesen,GENERAL_IND_CONSTRUCTION
+10,Handel / Konsum,hg,INDUSTRY_20000,Konsumgüter und Handel,GENERAL_IND_TRADE
+27,Textilbranche,tb,INDUSTRY_20000,Konsumgüter und Handel,GENERAL_IND_TEXTILE
+39,Automobil / Automobilzulieferer,id,INDUSTRY_30000,Automobil und Fahrzeugbau,GENERAL_IND_CAR
+5,Druck / Papier / Verpackung,dp,INDUSTRY_40000,Industrie und Maschinenbau,GENERAL_IND_PUBLISH
+7,Elektro / Elektronik,el,INDUSTRY_40000,Industrie und Maschinenbau,GENERAL_IND_ELECTRICS
+12,Industrie,id,INDUSTRY_40000,Industrie und Maschinenbau,GENERAL_IND_INDUSTRY
+17,Maschinen / Anlagenbau,mb,INDUSTRY_40000,Industrie und Maschinenbau,GENERAL_IND_MECHA
+40,Chemie,pc,INDUSTRY_40000,Industrie und Maschinenbau,GENERAL_IND_CHEM
+21,Medizin / Pharma,pc,INDUSTRY_50000,Pharma und Medizintechnik,GENERAL_IND_MED
+41,Medizintechnik,pc,INDUSTRY_50000,Pharma und Medizintechnik,GENERAL_IND_MEDTECH
+19,Nahrungsmittel / Land / Forstwirtschaft,nm,INDUSTRY_60000,"Energie, Wasser und Umwelt",GENERAL_IND_FOOD
+32,Energiewirtschaft,ew,INDUSTRY_60000,"Energie, Wasser und Umwelt",GENERAL_IND_ENERGY
+28,Verkehr / Transport / Logistik,vt,INDUSTRY_70000,Transport und Logistik,GENERAL_IND_TRANSPORT
+9,Tourismus / Hotel / Gastronomie,gt,INDUSTRY_80000,Tourismus und Gastronomie,GENERAL_IND_TOURISM
+6,EDV / IT,it,INDUSTRY_90000,Internet und Informationstechnologie,GENERAL_IND_IT
+13,Internet / Multimedia,in,INDUSTRY_90000,Internet und Informationstechnologie,GENERAL_IND_INTERNET
+26,Telekommunikation,tk,INDUSTRY_100000,Telekommunikation,GENERAL_IND_TELCO
+18,Medien,me,INDUSTRY_110000,Medien und Verlage,GENERAL_IND_MEDIA
+1,Banken,bf,INDUSTRY_120000,Banken und Finanzdienstleistungen,GENERAL_IND_BANK
+36,Finanzen,bf,INDUSTRY_120000,Banken und Finanzdienstleistungen,GENERAL_IND_FINANCE
+37,Versicherung,bf,INDUSTRY_130000,Versicherungen,GENERAL_IND_INSURANCE
+11,Immobilien / Facility Management,im,INDUSTRY_140000,Immobilien,GENERAL_IND_ESTATE
+22,Rechtsberatung,rs,INDUSTRY_150000,"Wirtschaftsprüfung, Steuern und Recht",GENERAL_IND_LAW
+42,Steuerberatung / Wirtschaftsprüfung,rs,INDUSTRY_150000,"Wirtschaftsprüfung, Steuern und Recht",GENERAL_IND_TAX
+3,Beratung / Consulting,bc,INDUSTRY_160000,Beratung und Consulting,GENERAL_IND_CONSULT
+15,Marketing / Werbung / PR,pr,INDUSTRY_170000,"Marketing, PR und Design",GENERAL_IND_MARKETING
+35,Personalwesen / Personalbeschaffung,pw,INDUSTRY_180000,Personaldienstleistungen,GENERAL_IND_HR
+20,Vereine,ve,INDUSTRY_190000,"Öffentlicher Dienst, Verbände und Einrichtungen",GENERAL_IND_ORG
+31,Öffentliche Verwaltung,ov,INDUSTRY_190000,"Öffentlicher Dienst, Verbände und Einrichtungen",GENERAL_IND_GOV
+4,Bildung / Universität / FH / Schulen,bi,INDUSTRY_200000,"Erziehung, Bildung und Wissenschaft",GENERAL_IND_EDU
+8,Forschung / Entwicklung / Wissenschaft,fw,INDUSTRY_200000,"Erziehung, Bildung und Wissenschaft",GENERAL_IND_RD
+25,Gesundheitswesen / Soziales / Pflege,so,INDUSTRY_210000,Gesundheit und Soziales,GENERAL_IND_HEALTHCARE
+14,Kunst / Kultur / Unterhaltung,kk,INDUSTRY_220000,"Kunst, Kultur und Sport",GENERAL_IND_ARTS
+24,Sport /  Fitness / Beauty,sw,INDUSTRY_220000,"Kunst, Kultur und Sport",GENERAL_IND_FITNESS
+16,Marktforschung,mf,INDUSTRY_230000,Weitere,GENERAL_IND_SURVEY
+23,Seminar / Messeanbieter,se,INDUSTRY_230000,Weitere,GENERAL_IND_EVENT
+29,sonstige Branchen,so,INDUSTRY_230000,Weitere,GENERAL_IND_MISC
+30,Handwerk,hw,INDUSTRY_230000,Weitere,GENERAL_IND_CRAFTS
+33,Einkauf / Beschaffung,ek,INDUSTRY_230000,Weitere,GENERAL_IND_BUY
+34,Administration / Verwaltung / Bürowesen,or,INDUSTRY_230000,Weitere,GENERAL_IND_ADMIN
+38,Dienstleistung,bc,INDUSTRY_230000,Weitere,GENERAL_IND_SERVICE
