@@ -133,3 +133,6 @@ notebooks/
 
 config/credentials.yaml
 haystack_app/
+data/text_*
+data/processed_reviews.parquet
+data/improvement_text.parquet
