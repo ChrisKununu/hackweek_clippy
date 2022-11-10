@@ -1,16 +1,19 @@
+import xml.etree.ElementTree
+
 import pandas as pd
 import re
 import xml.etree.ElementTree as ET
 import yaml
+from src.utils import create_index
 
 
-def parse_xml(path):
+def parse_xml(path: str) -> xml.etree.ElementTree.Element:
     tree = ET.parse(path)
     root = tree.getroot()
     return root
 
 
-def load_data(r):
+def load_data(r: xml.etree.ElementTree.Element) -> list:
     data = []
     for x in r[0].findall('item'):
         title = x.find('title').text
@@ -41,4 +44,6 @@ if __name__ == '__main__':
 
     with open(config['output_file_path'], mode='wb') as file:
         df.to_parquet(file)
+
+    create_index(data=df, min_words=12)
 
