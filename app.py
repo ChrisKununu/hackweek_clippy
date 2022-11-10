@@ -3,7 +3,7 @@ import json
 from haystack.document_stores import OpenSearchDocumentStore
 from haystack.pipelines import ExtractiveQAPipeline
 from haystack.schema import Document
-from haystack.nodes import BM25Retriever, FARMReader
+from haystack.nodes import BM25Retriever, FARMReader, DensePassageRetriever
 import pandas as pd
 from tqdm import tqdm
 import yaml
@@ -60,6 +60,7 @@ def data_setup(
 
     # Loads reader and retriever
     retriever = BM25Retriever(document_store=document_store)
+
     reader = FARMReader(model_name_or_path=ds_config['model_name'], use_gpu=True)
 
     pipe = ExtractiveQAPipeline(reader, retriever)
@@ -94,6 +95,14 @@ def main():
         min_value=1,
         max_value=10,
         value=DEFAULT_DOCS_FROM_RETRIEVER,
+        step=1,
+        on_change=reset_results,
+        )
+    min_score = st.sidebar.slider(
+        "Min. Score for valid results",
+        min_value=0,
+        max_value=100,
+        value=50,
         step=1,
         on_change=reset_results,
         )
@@ -132,7 +141,7 @@ def main():
                 ):
 
             prediction = pipe.run(
-                query=search_term,
+                query=search_term.lower(),
                 params={"Retriever": {"top_k": top_k_retriever}, "Reader": {"top_k": top_k_reader}}
                 )
 
@@ -148,18 +157,18 @@ def main():
                 url, title = meta['link'], meta['title']
                 source = f"[{title}]({url})"
 
-                if score > 0.7:
+                if score >= float(min_score):
                     # Hack due to this bug: https://github.com/streamlit/streamlit/issues/3190
                     st.write(
                         markdown(context[:start_idx] + str(annotation(answer, "ANSWER", "#8ef")) + context[end_idx:]),
                         unsafe_allow_html=True,
                         )
                     st.markdown(f"**Relevance:** {score} -  **Source:** {source}")
-                else:
-                    st.info(
-                        "🤔 &nbsp;&nbsp; Clippy is unsure whether any of the documents contain an answer to your question. Try to reformulate it!"
-                        )
-                    st.write("**Relevance:** ", score)
+                #else:
+                #    st.info(
+                #        "🤔 &nbsp;&nbsp; Clippy is unsure whether any of the documents contain an answer to your question. Try to reformulate it!"
+                #        )
+                #    st.write("**Relevance:** ", score)
 
 
 if __name__ == '__main__':
