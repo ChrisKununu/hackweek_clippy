@@ -7,45 +7,39 @@ from haystack.nodes import BM25Retriever, FARMReader
 import pandas as pd
 from tqdm import tqdm
 import yaml
+from annotated_text import annotation
+from markdown import markdown
+from PIL import Image
+
+# Adjust to a question that you would like users to see in the search bar when they load the UI:
+DEFAULT_QUESTION_AT_STARTUP = "Was sind die häufigsten Fehler in einer Bewerbung?"
+DEFAULT_ANSWER_AT_STARTUP = "None"
+
+# Sliders
+DEFAULT_DOCS_FROM_RETRIEVER = 3
+DEFAULT_NUMBER_OF_ANSWERS = 3
 
 
-def search_result(i: int, answer: str, context: str, score: float, meta: dict, offsets_in_context) -> str:
-    span_start = '<span style="border-radius: 0.4rem; color: white;font-weight: 700; padding: 0.1rem; margin-bottom: 0.5rem;background-color: lightblue;">'
-    span_end = '</span>'
-    span_answer = "<span style='padding-left: 1rem;font-weight: 100;font-size:70%;'> Answer </span>"
-    f_context = context[:offsets_in_context.start] + span_start + answer + span_answer + span_end + context[offsets_in_context.end:]
-    return f"""
-        <div style="font-size:95%;">
-            {i + 1}.
-            <a href="{meta['link']}">
-                {meta['title']}
-            </a>
-        </div>
-        <div style="font-size:95%;">
-            <div style="color:white;font-size:95%;">
-                {'Answer: '}&nbsp;
-            </div>
-        </div>
-        <div style="font-size:95%;">
-                <div style="font-size:95%;">
-                {f_context}
-            </div>
-        </div>
-        <div style="font-size:95%;">
-            <div style="color:grey;font-size:95%;">
-                {meta['pubDate']}
-            </div>
-            <div style="color:grey;font-size:95%;">
-                Author: {meta['author']} &nbsp;
-            </div>
-            <div style="float:left;">
-                Score: {score} &nbsp;
-            </div>
-        </div>
-    """
+def set_state_if_absent(key, value):
+    if key not in st.session_state:
+        st.session_state[key] = value
 
 
 def main():
+    image = Image.open('img/clippy_image.png')
+
+    st.set_page_config(page_title="Clippy Demo", page_icon=image)
+
+    # Persistent state
+    set_state_if_absent("question", DEFAULT_QUESTION_AT_STARTUP)
+    set_state_if_absent("answer", DEFAULT_ANSWER_AT_STARTUP)
+
+    # Small callback to reset the interface in case the text of the question changes
+    def reset_results(*args):
+        st.session_state.answer = None
+        st.session_state.results = None
+        st.session_state.raw_json = None
+
     # load settings and mappings for index
 
     with open('config/credentials.yaml') as f:
@@ -59,34 +53,93 @@ def main():
                                              password=credentials['password'],
                                              index=config['index_name'])
 
-    retriever = BM25Retriever(document_store=document_store)
-    reader = FARMReader(model_name_or_path="deepset/gelectra-large-germanquad", use_gpu=True)
-    st.title('Ask the kununu blog:')
-    search_term = st.text_input('Enter your Question:')
-    pipe = ExtractiveQAPipeline(reader, retriever)
+    # Sidebar
 
-    if search_term:
-        prediction = pipe.run(
-            query=search_term,
-            params={"Retriever": {"top_k": 10}, "Reader": {"top_k": 5}}
+    st.sidebar.image(image, caption=None)
+    st.sidebar.header("Options")
+    top_k_reader = st.sidebar.slider(
+        "Max. number of answers",
+        min_value=1,
+        max_value=10,
+        value=DEFAULT_NUMBER_OF_ANSWERS,
+        step=1,
+        on_change=reset_results,
+        )
+    top_k_retriever = st.sidebar.slider(
+        "Max. number of documents from retriever",
+        min_value=1,
+        max_value=10,
+        value=DEFAULT_DOCS_FROM_RETRIEVER,
+        step=1,
+        on_change=reset_results,
+        )
+
+    with st.spinner(
+            "🧠 &nbsp;&nbsp; Setting up the system... \n "
+            ):
+        retriever = BM25Retriever(document_store=document_store)
+        reader = FARMReader(model_name_or_path=config['model_name'], use_gpu=True)
+        # Title
+        st.write("# Clippy Demo - Explore the blog")
+        st.markdown(
+            """
+    This demo takes its data from news.kununu.com pages crawled in November 2022.
+
+    Ask any question on this topic and see if Clippy can find the correct answer to your query!
+
+    *Note: do not use keywords, but full-fledged questions.* The demo is not optimized to deal with keyword queries and might misunderstand you.
+    """,
+            unsafe_allow_html=True,
             )
 
-        for i in range(len(prediction['answers'])):
-            answer = prediction['answers'][i].answer
-            context = prediction['answers'][i].context
-            offsets_in_context = prediction['answers'][i].offsets_in_context[0]
+        search_term = st.text_input(
+            value=st.session_state.question,
+            max_chars=100,
+            on_change=reset_results,
+            label='Enter your Question:',
+            label_visibility="hidden",
+            )
 
+        pipe = ExtractiveQAPipeline(reader, retriever)
 
-            score = prediction['answers'][i].score
+    if search_term:
+        with st.spinner(
+                "🧠 &nbsp;&nbsp; Performing neural search on documents... \n "
+                ):
 
-            document_id = prediction['answers'][i].document_id
-            doc = [x for x in prediction['documents'] if x.id == document_id][0]
-            meta = doc.meta
+            prediction = pipe.run(
+                query=search_term,
+                params={"Retriever": {"top_k": top_k_retriever}, "Reader": {"top_k": top_k_reader}}
+                )
 
-            if score > 0.7:
-                st.markdown(search_result(i, answer, context, score, meta, offsets_in_context), unsafe_allow_html=True)
+            for i in range(len(prediction['answers'])):
+                answer = prediction['answers'][i].answer
+                context = prediction['answers'][i].context
+                start_idx = context.find(answer)
+                end_idx = start_idx + len(answer)
+                score = round(prediction['answers'][i].score * 100, 2)
+                document_id = prediction['answers'][i].document_id
+                doc = [x for x in prediction['documents'] if x.id == document_id][0]
+                meta = doc.meta
+                url, title = meta['link'], meta['title']
+                source = f"[{title}]({url})"
+
+                if score > 0.7:
+                    # Hack due to this bug: https://github.com/streamlit/streamlit/issues/3190
+                    st.write(
+                        markdown(context[:start_idx] + str(annotation(answer, "ANSWER", "#8ef")) + context[end_idx:]),
+                        unsafe_allow_html=True,
+                        )
+                    st.markdown(f"**Relevance:** {score} -  **Source:** {source}")
+                else:
+                    st.info(
+                        "🤔 &nbsp;&nbsp; Clippy is unsure whether any of the documents contain an answer to your question. Try to reformulate it!"
+                        )
+                    st.write("**Relevance:** ", score)
 
 
 if __name__ == '__main__':
     main()
+
+
 
