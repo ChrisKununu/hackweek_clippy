@@ -1,5 +1,6 @@
 data_path: "data/"
 index_name: "blog"
+review_index: "reviews"
 input_file_path: "data/kununublog.WordPress.2022-11-08.xml"
 output_file_path: "data/kununublog.parquet"
 model_name: "deepset/gelectra-large-germanquad"

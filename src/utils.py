@@ -31,7 +31,7 @@ def create_index(data: pd.DataFrame,
                                              password=credentials['password'],
                                              index=config['index_name'])
     # delete all documents just to be safe
-    document_store.delete_documents()
+    document_store.delete_index(config['index_name'])
 
     # preprocess input data for indexing
     print("Generating Documents from the files...")
@@ -39,7 +39,7 @@ def create_index(data: pd.DataFrame,
 
     # write the dicts containing documents to Opensearch
     print("Writing Documents to the Document store...")
-    document_store.write_documents(documents)
+    document_store.write_documents(documents, index=config['index_name'])
 
     document_store.describe_documents(index=config['index_name'])
 
