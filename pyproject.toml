@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "hackweek-clippy"
+version = "0.1.0"
+description = "question answering bot based on kununu reviews and blog"
+authors = ["Christoph Haushofer, Paul Leitner"]
+readme = "README.md"
+packages = [{include = "hackweek_clippy"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+streamlit = "^1.15.1"
+haystack = "^0.42"
+farm-haystack = "^1.11.0"
+st-annotated-text = "^3.0.0"
+opensearch-py = "^2.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
