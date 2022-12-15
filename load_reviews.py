@@ -141,7 +141,6 @@ def load_opensearch(index_name: str = None):
     pass
 
 
-
 if __name__ == '__main__':
 
     print('loading')
